@@ -1,9 +1,127 @@
 <html>
     <head>
-        <title>Block Project</title>
+        <title>Block Blog</title>
+        <style>
+            html {
+                background: #222;
+                color: white;
+            }
+            input, textarea, button {
+                background: #555;
+                color: white;
+            }
+            .title {
+                font-size: 22px;
+                line-height: 1px;
+            }
+            .body {
+                line-height: 1px;
+            }
+            .author, .date {
+                font-size: 20px;
+            }
+            #title, #body {
+                width: 400px;
+            }
+            #author {
+                width: 340px;
+            }
+            #secret {
+                width: 60px;
+            }
+            #body {
+                height: 200px;
+                font-family: sans-serif;
+            }
+            #posts {
+                border: 2px solid white;
+                padding: 10px;
+            }
+            #poster {
+                padding: 10px;
+                font-size: 18px;
+            }
+        </style>
     </head>
     <body>
-        <h2>Block Project</h2>
-        <p>This is where my GRASP project for Block will go eventually, but not right now.</p>
+        <h2>Block Blog</h2>
+        <input id="title" placeholder="Title"><br/>
+        <input id="author" placeholder="Author"><input id="secret" placeholder="Secret"><br/>
+        <textarea id="body" placeholder="Body"></textarea><br/>
+        <button id="poster" onclick="publishPost()">Post!</button><br/><br/>
+        <div id="posts">fetching posts</div>
+        <script>
+            //alert("yes!");
+            let noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            
+            async function getPosts() {
+                let fetching_response = await fetch(
+                    "https://api.github.com/gists/e38c31fbf1881a826f776cdb7393b793", {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/vnd.github+json",
+                            "Authorization": "Bearer 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"
+                        }
+                    }
+                );
+                return fetching_response.json();
+            }
+            
+            async function publishPost() {
+                let t = document.getElementById("title").value;
+                let a = document.getElementById("author").value;
+                let s = document.getElementById("secret").value;
+                let b = document.getElementById("body").value;
+                if(!t || !a || !b) {let answer = confirm("You've left some fields blank. Post anyway?"); if(!answer) {return;}}
+                if(s && !["flurp", "basques"].includes(s)) {let answer = confirm("You're using the secret field, which is where special passwords are used to give your name a cool icon. Your entry is not one of the passwords. Post anyway?"); if(!answer) {return;}}
+                let pre_posting_response = getPosts().then(async function(data) {
+                    let prevPosts = data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"');
+                    let JSONified = JSON.parse(prevPosts);
+                    JSONified.posts.push({"title": t, "author": a, "secret": s, "body": b, "date": Date.now()});
+                    let body = '"' + JSON.stringify(JSONified).replaceAll('"', '\\"') + '"';
+                    let posting_response = await fetch(
+                        "https://api.github.com/gists/e38c31fbf1881a826f776cdb7393b793", {
+                            method: "PATCH",
+                            headers: {
+                                "Accept": "application/vnd.github+json",
+                                "Authorization": "Bearer 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"
+                            },
+                            body: JSON.stringify({
+                                gist_id: "e38c31fbf1881a826f776cdb7393b793",
+                                files: {
+                                    "torinsgist.txt": {
+                                        content: body
+                                    }
+                                }
+                            })
+                        }
+                    );
+                    
+                    posting_response.json().then(function(data) {/*alert(JSON.stringify(data));*/}).catch((err) => alert("Posting error: "+err)); 
+                    displayPosts(); // so you can see your own post
+                }).catch((err) => alert("Pre-posting error: "+err));
+            }
+            
+            function displayPosts() {
+                getPosts().then(function(data) {
+                    document.getElementById("posts").innerHTML = JSON.parse(data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"')).posts.reverse().map(
+                        (p) => `
+<b class="title">${noHacks((p.title ? p.title : "Untitled"))}</b>
+posted by <span class="author">${noHacks(p.author ? p.author : "anonymous")}</span>${p.secret ? (
+    p.secret == "flurp" ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
+    p.secret == "basques" ? " 🌜 <i style='color:yellow'>Moon</i>" : ""
+)) : ""}<span class="date">
+${((Date.now()-p.date) > 864e5 ? " "+Math.floor((Date.now()-p.date)/864e5)+"d" : "")}
+${((Date.now()-p.date) > 36e5 ? " "+Math.floor(((Date.now()-p.date) % 864e5)/36e5)+"h" : "")}
+${((Date.now()-p.date) > 6e4 ? " "+Math.floor(((Date.now()-p.date) % 36e5)/6e4)+"m" : "")}
+${((Date.now()-p.date) > 1e3 ? " "+Math.floor(((Date.now()-p.date) % 6e4)/1e3)+"s" : " now")}
+</span> ago
+<p class="body">${noHacks(p.body)}</p>`
+                    ).join("-".repeat(50) + "<br/>");
+                }).catch(function(err) {document.getElementById("posts").innerHTML = "error while fetching posts: "+err;});
+            }
+            displayPosts();
+            setInterval(displayPosts, 12e4); // update the posts every couple minutes
+        </script>
     </body>
 </html>
