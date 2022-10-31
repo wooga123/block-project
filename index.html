@@ -60,7 +60,7 @@
                         method: "GET",
                         headers: {
                             "Accept": "application/vnd.github+json",
-                            "Authorization": "Bearer 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"
+                            "Authorization": "Bearer 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"
                         }
                     }
                 );
@@ -84,7 +84,7 @@
                             method: "PATCH",
                             headers: {
                                 "Accept": "application/vnd.github+json",
-                                "Authorization": "Bearer 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"
+                                "Authorization": "Bearer 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"
                             },
                             body: JSON.stringify({
                                 gist_id: "e38c31fbf1881a826f776cdb7393b793",
@@ -98,12 +98,14 @@
                     );
                     
                     posting_response.json().then(function(data) {/*alert(JSON.stringify(data));*/}).catch((err) => alert("Posting error: "+err)); 
-                    displayPosts(); // so you can see your own post
+                    updateThePosts(); // so you can see your own post
                 }).catch((err) => alert("Pre-posting error: "+err));
             }
             
+            let thePosts = getPosts();
+            function updateThePosts() {thePosts = getPosts();}
             function displayPosts() {
-                getPosts().then(function(data) {
+                thePosts.then(function(data) {
                     document.getElementById("posts").innerHTML = JSON.parse(data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"')).posts.reverse().map(
                         (p) => `
 <b class="title">${noHacks((p.title ? p.title : "Untitled"))}</b>
@@ -120,8 +122,10 @@ ${((Date.now()-p.date) > 1e3 ? " "+Math.floor(((Date.now()-p.date) % 6e4)/1e3)+"
                     ).join("-".repeat(50) + "<br/>");
                 }).catch(function(err) {document.getElementById("posts").innerHTML = "error while fetching posts: "+err;});
             }
+            updateThePosts();
+            setInterval(updateThePosts, 12e4); // update the posts every couple minutes
             displayPosts();
-            setInterval(displayPosts, 12e4); // update the posts every couple minutes
+            setInterval(displayPosts, 1000);
         </script>
     </body>
 </html>
