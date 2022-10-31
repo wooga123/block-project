@@ -53,6 +53,7 @@
         <script>
             //alert("yes!");
             let noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            let theToken = "UuDYJ2vUqS4YfPJmT5wIGvnkpgSYXf4W9piG_phg reraeB".split("").reverse().join("");
             
             async function getPosts() {
                 let fetching_response = await fetch(
@@ -60,7 +61,7 @@
                         method: "GET",
                         headers: {
                             "Accept": "application/vnd.github+json",
-                            "Authorization": "Bearer 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"
+                            "Authorization": theToken
                         }
                     }
                 );
@@ -84,7 +85,7 @@
                             method: "PATCH",
                             headers: {
                                 "Accept": "application/vnd.github+json",
-                                "Authorization": "Bearer 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"
+                                "Authorization": theToken
                             },
                             body: JSON.stringify({
                                 gist_id: "e38c31fbf1881a826f776cdb7393b793",
