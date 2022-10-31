@@ -53,7 +53,6 @@
         <script>
             //alert("yes!");
             let noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-            let $_ =$__=>noHacks(noHacks($__));
             let theToken = "UuDYJ2vUqS4YfPJmT5wIGvnkpgSYXf4W9piG_phg reraeB".split("").reverse().join("");
             
             async function getPosts() {
@@ -75,7 +74,6 @@
                 let s = document.getElementById("secret").value;
                 let b = document.getElementById("body").value;
                 if(!t || !a || !b) {let answer = confirm("You've left some fields blank. Post anyway?"); if(!answer) {return;}}
-                if(s && ![(27*(2**2)).toString(), "imahacker"].includes(s)) {let answer = confirm("You're using the secret field, which is where special passwords are used to give your name a cool icon. Your entry is not one of the passwords. Post anyway?"); if(!answer) {return;}}
                 let pre_posting_response = getPosts().then(async function(data) {
                     let prevPosts = data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"');
                     let JSONified = JSON.parse(prevPosts);
@@ -98,8 +96,8 @@
                             })
                         }
                     );
-                    posting_response.json().then(function(data) {/*alert(JSON.stringify(data));*/}).catch((err) => alert("Posting error: "+err)); 
-                    updateThePosts();// so you can see your own post
+                    posting_response.json().then(function(data) {}).catch((err) => alert("Posting error: "+err)); 
+                    updateThePosts(); // so you can see your own post
                 }).catch((err) => alert("Pre-posting error: "+err));
                 document.getElementById("title").value = "";
                 document.getElementById("body").value = "";
@@ -115,9 +113,9 @@
 posted by <span class="author">${noHacks(p.author ? p.author : "anonymous")}</span>${p.secret ? (
     p.secret == noHacks(`
 
-<<< T0RIN'S VERY SUPER SECRET PASSW0RD -- DON'T SHARE WITH PE0PLE!!! >>>
+<<< TORIN'S VERY SUPER SECRET PASSWORD IS: [t0rinpassword] DON'T SHARE WITH PEOPLE!!! >>>
 
-`).charCodeAt(1).toString() ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
+`).charCodeAt(3).toString() ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
     p.secret == "imahacker" ? " 💻 <i style='color:cyan'>Hacker</i>" : ""
 )) : ""}<span class="date">
 ${((Date.now()-p.date) > 864e5 ? " "+Math.floor((Date.now()-p.date)/864e5)+"d" : "")}
