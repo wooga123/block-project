@@ -48,12 +48,12 @@
         <button id="poster" onclick="publishPost()">Post!</button><br/><br/>
         <div id="posts">fetching posts</div>
         <script>
-            let _,noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            let noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             let theToken = "UuDYJ2vUqS4YfPJmT5wIGvnkpgSYXf4W9piG_phg reraeB".split("").reverse().join("");
             
             async function getPosts() {
                 let fetching_response = await fetch(
-                    "https://api.github.com/gists/e38c31fbf1881a826f776cdb7393b793", {
+                    "https://api.github.com/gists/8de4923bdd0d849f271bd4f9cfb2f8c1", {
                         method: "GET",
                         headers: {
                             "Accept": "application/vnd.github+json",
@@ -62,6 +62,17 @@
                     }
                 );
                 return fetching_response.json();
+            }
+            
+            function baseFortySix(str, f) {
+                let _46_ = "";
+                for(let i of str) {
+                    _46_ += i;
+                    for(let j=0; j<f; j++) {
+                        _46_ += "qwerasdfzxcvbnmghjkltyuiopQAZXCDEWSRFVBNHGTYUIOPJKLM1234567890_+"[Math.floor(Math.random()*64)];
+                    }
+                }
+                return _46_;
             }
             
             async function publishPost() {
@@ -73,10 +84,10 @@
                 let pre_posting_response = getPosts().then(async function(data) {
                     let prevPosts = data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"');
                     let JSONified = JSON.parse(prevPosts);
-                    JSONified.posts.push({"title": t, "author": a, "secret": s, "body": b, "date": Date.now()});
+                    JSONified.posts.push({"title": t, "author": a, "secret": baseFortySix(s,t.length), "body": b, "date": Date.now()});
                     let body = '"' + JSON.stringify(JSONified).replaceAll('"', '\\"') + '"';
                     let posting_response = await fetch(
-                        "https://api.github.com/gists/e38c31fbf1881a826f776cdb7393b793", {
+                        "https://api.github.com/gists/8de4923bdd0d849f271bd4f9cfb2f8c1", {
                             method: "PATCH",
                             headers: {
                                 "Accept": "application/vnd.github+json",
@@ -102,16 +113,13 @@
             let thePosts = getPosts();
             function updateThePosts() {thePosts = getPosts();}
             function displayPosts() {
-                _=__=>`thePosts().reverse();`;thePosts.then(function(data) {
-                    document.getElementById("posts").innerHTML = JSON.parse(data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"')).posts.reverse().map(
+                let _=($,__)=>__.split("").filter((e,i)=>i%($+1)==0).join("");thePosts.then(function(data) {
+                    let postList = JSON.parse(data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"')).posts;
+                    document.getElementById("posts").innerHTML = postList.reverse().map(
                         (p) => `
 <b class="title">${noHacks((p.title ? p.title : "Untitled"))}</b>
 posted by <span class="author">${noHacks(p.author ? p.author : "anonymous")}</span>${p.secret ? (p.author == "Torin" &&
-    p.secret == _(`
-
-<<< TORIN'S VERY SUPER SECRET PASSWORD IS: [t0rin_the_epic_coder] DON'T SHARE WITH PEOPLE!!! >>>
-
-`) ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
+    _(p.title.length, p.secret) == "own3r" ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
     p.secret == "imahacker" ? " 💻 <i style='color:cyan'>Hacker</i>" : ""
 )) : ""}<span class="date">
 ${((Date.now()-p.date) > 864e5 ? " "+Math.floor((Date.now()-p.date)/864e5)+"d" : "")}
@@ -120,8 +128,8 @@ ${((Date.now()-p.date) > 6e4 ? " "+Math.floor(((Date.now()-p.date) % 36e5)/6e4)+
 ${((Date.now()-p.date) > 1e3 ? " "+Math.floor(((Date.now()-p.date) % 6e4)/1e3)+"s" : " now")}
 </span> ago
 <p class="body">${noHacks(p.body)}</p>`
-                    ).join("-".repeat(50) + "<br/>");
-                }).catch(function(err) {document.getElementById("posts").innerHTML = "error while fetching posts: "+err;});
+                    ).join("-".repeat(50) + "<br/>")
+                });
             }
             updateThePosts();
             setInterval(updateThePosts, 12e4); // update the posts every couple minutes
