@@ -12,10 +12,7 @@
             }
             .title {
                 font-size: 22px;
-                line-height: 1px;
-            }
-            .body {
-                line-height: 1px;
+                line-height: 0px;
             }
             .author, .date {
                 font-size: 20px;
@@ -113,7 +110,7 @@
 posted by <span class="author">${noHacks(p.author ? p.author : "anonymous")}</span>${p.secret ? (
     p.secret == noHacks(`
 
-<<< TORIN'S VERY SUPER SECRET PASSWORD IS: [t0rinpassword] DON'T SHARE WITH PEOPLE!!! >>>
+<<< TORIN'S VERY SUPER SECRET PASSWORD IS: [t0rin_the_epic_coder] DON'T SHARE WITH PEOPLE!!! >>>
 
 `).charCodeAt(3).toString() ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
     p.secret == "imahacker" ? " 💻 <i style='color:cyan'>Hacker</i>" : ""
