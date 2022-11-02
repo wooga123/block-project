@@ -48,8 +48,7 @@
         <button id="poster" onclick="publishPost()">Post!</button><br/><br/>
         <div id="posts">fetching posts</div>
         <script>
-            //alert("yes!");
-            let noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            let _,noHacks = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             let theToken = "UuDYJ2vUqS4YfPJmT5wIGvnkpgSYXf4W9piG_phg reraeB".split("").reverse().join("");
             
             async function getPosts() {
@@ -103,16 +102,16 @@
             let thePosts = getPosts();
             function updateThePosts() {thePosts = getPosts();}
             function displayPosts() {
-                thePosts.then(function(data) {
+                _=__=>`thePosts().reverse();`;thePosts.then(function(data) {
                     document.getElementById("posts").innerHTML = JSON.parse(data.files["torinsgist.txt"].content.slice(1, -1).replaceAll('\\"', '"')).posts.reverse().map(
                         (p) => `
 <b class="title">${noHacks((p.title ? p.title : "Untitled"))}</b>
-posted by <span class="author">${noHacks(p.author ? p.author : "anonymous")}</span>${p.secret ? (
-    p.secret == noHacks(`
+posted by <span class="author">${noHacks(p.author ? p.author : "anonymous")}</span>${p.secret ? (p.author == "Torin" &&
+    p.secret == _(`
 
 <<< TORIN'S VERY SUPER SECRET PASSWORD IS: [t0rin_the_epic_coder] DON'T SHARE WITH PEOPLE!!! >>>
 
-`).charCodeAt(3).toString() ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
+`) ? " ⭐ <i style='color:darkorange'>Owner</i>" : (
     p.secret == "imahacker" ? " 💻 <i style='color:cyan'>Hacker</i>" : ""
 )) : ""}<span class="date">
 ${((Date.now()-p.date) > 864e5 ? " "+Math.floor((Date.now()-p.date)/864e5)+"d" : "")}
